@@ -31,6 +31,7 @@ type SkipListNode struct {
 func newSkipList() *Skiplist {
 	return &Skiplist{
 		maxHeight: maxHeight,
+		mtx:       &sync.RWMutex{},
 		head:      [maxHeight]*SkipListNode{},
 	}
 }
