@@ -3,6 +3,7 @@ package skiplist
 import (
 	"bytes"
 	"math/rand"
+	"sync"
 )
 
 const maxHeight uint8 = 32
@@ -14,9 +15,10 @@ type Memtable interface {
 var _ Memtable = (*Skiplist)(nil)
 
 type Skiplist struct {
+	head      [maxHeight]*SkipListNode
+	mtx       *sync.RWMutex
 	maxHeight uint8
 	height    uint8
-	head      [maxHeight]*SkipListNode
 }
 
 type SkipListNode struct {
@@ -45,6 +47,8 @@ func (sk *Skiplist) insert(key, value []byte) (err error) {
 
 	level := node.height
 
+	sk.mtx.Lock()
+	defer sk.mtx.Unlock()
 	for {
 		head := sk.head[level]
 
