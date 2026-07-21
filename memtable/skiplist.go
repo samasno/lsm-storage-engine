@@ -8,12 +8,6 @@ import (
 
 const maxHeight uint8 = 32
 
-type Memtable interface {
-	insert(key []byte, value []byte) error
-}
-
-var _ Memtable = (*Skiplist)(nil)
-
 type Skiplist struct {
 	head      [maxHeight]*SkipListNode
 	mtx       *sync.RWMutex
@@ -40,7 +34,7 @@ func newNode(key, value []byte) *SkipListNode {
 	return &SkipListNode{key: key, value: value, next: [maxHeight]*SkipListNode{}}
 }
 
-func (sk *Skiplist) insert(key, value []byte) (err error) {
+func (sk *Skiplist) Insert(key, value []byte) (err error) {
 	node := newNode(key, value)
 
 	node.height = randomHeight(sk.maxHeight)
