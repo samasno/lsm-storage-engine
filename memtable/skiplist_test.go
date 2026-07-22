@@ -8,7 +8,7 @@ import (
 )
 
 func TestInsertsInDescendingOrder(t *testing.T) {
-	sk := NewSkipList(SortDescending)
+	sk := NewSkipList(SortKeysDescending)
 
 	count := 100
 	generateTestEntries(count, sk)
@@ -22,6 +22,25 @@ func TestInsertsInDescendingOrder(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+}
+
+func TestSeekLTE(t *testing.T) {
+	sk := NewSkipList(SortKeysDescending)
+
+	a := "a"
+	b := "b"
+	c := "c"
+
+	testEntries := []string{a, b, c}
+
+	for _, v := range testEntries {
+		sk.Insert([]byte(v), []byte(v))
+	}
+
+	k, v := sk.SeekEqualOrLower([]byte(a))
+
+	assertEqual(t, "Got correct key", string(k), a)
+	assertEqual(t, "Got correct value", string(v), a)
 }
 
 func generateTestEntries(count int, sk *Skiplist) error {
@@ -38,13 +57,12 @@ func generateTestEntries(count int, sk *Skiplist) error {
 			return err
 		}
 		sk.Insert(key, value)
-		// println("inserted", i)
 	}
 
 	return nil
 }
 
-func assert(t *testing.T, condition bool, message string) {
+func assertTest(t *testing.T, condition bool, message string) {
 	t.Helper()
 	if !condition {
 		t.Error(message)
