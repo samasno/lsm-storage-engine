@@ -8,7 +8,7 @@ import (
 )
 
 func TestInsertsInOrder(t *testing.T) {
-	sk := newSkipList()
+	sk := NewSkipList()
 
 	count := 100
 	generateTestEntries(count, sk)

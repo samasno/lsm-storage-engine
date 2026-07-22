@@ -22,7 +22,7 @@ type SkipListNode struct {
 	height uint8
 }
 
-func newSkipList() *Skiplist {
+func NewSkipList() *Skiplist {
 	return &Skiplist{
 		maxHeight: maxHeight,
 		mtx:       &sync.RWMutex{},
