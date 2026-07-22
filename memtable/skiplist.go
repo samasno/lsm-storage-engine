@@ -183,10 +183,12 @@ func randomHeight(maxHeight uint8) uint8 {
 	return h
 }
 
+// returns 1 if incoming is less than existing
 func SortKeysAscending(existing, incoming []byte) int {
 	return bytes.Compare(existing, incoming)
 }
 
+// returns 1 if incoming is greater than existing
 func SortKeysDescending(existing, incoming []byte) int {
 	return bytes.Compare(incoming, existing)
 }
