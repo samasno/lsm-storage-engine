@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func TestInsertsInOrder(t *testing.T) {
-	sk := NewSkipList()
+func TestInsertsInDescendingOrder(t *testing.T) {
+	sk := NewSkipList(SortDescending)
 
 	count := 100
 	generateTestEntries(count, sk)
@@ -18,7 +18,7 @@ func TestInsertsInOrder(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	err = skiplistLevelsOrdered(sk)
+	err = skiplistLevelsDescendingOrdered(sk)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -58,9 +58,9 @@ func assertEqual[T comparable](t *testing.T, name string, actual, expected T) {
 	}
 }
 
-func skiplistLevelsOrdered(sk *Skiplist) error {
+func skiplistLevelsDescendingOrdered(sk *Skiplist) error {
 	for i := uint8(0); i <= sk.height; i++ {
-		err := checkLevelOrdered(sk, i)
+		err := checkLevelDescendingOrdered(sk, i)
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func skiplistLevelsOrdered(sk *Skiplist) error {
 	return nil
 }
 
-func checkLevelOrdered(sk *Skiplist, level uint8) error {
+func checkLevelDescendingOrdered(sk *Skiplist, level uint8) error {
 	current := sk.head[level]
 
 	if nil == current {

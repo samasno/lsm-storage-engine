@@ -9,11 +9,14 @@ import (
 const maxHeight uint8 = 32
 
 type Skiplist struct {
-	head      [maxHeight]*SkipListNode
-	mtx       *sync.RWMutex
-	maxHeight uint8
-	height    uint8
+	head       [maxHeight]*SkipListNode
+	mtx        *sync.RWMutex
+	maxHeight  uint8
+	height     uint8
+	comparator Comparator
 }
+
+type Comparator func(a, b []byte) int
 
 type SkipListNode struct {
 	next   [maxHeight]*SkipListNode
@@ -22,11 +25,12 @@ type SkipListNode struct {
 	height uint8
 }
 
-func NewSkipList() *Skiplist {
+func NewSkipList(comparator Comparator) *Skiplist {
 	return &Skiplist{
-		maxHeight: maxHeight,
-		mtx:       &sync.RWMutex{},
-		head:      [maxHeight]*SkipListNode{},
+		maxHeight:  maxHeight,
+		mtx:        &sync.RWMutex{},
+		head:       [maxHeight]*SkipListNode{},
+		comparator: comparator,
 	}
 }
 
@@ -56,9 +60,9 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 			continue
 		}
 
-		comp := bytes.Compare(head.key, node.key)
+		comp := sk.comparator(head.key, node.key)
 
-		if -1 == comp {
+		if 1 == comp {
 			node.next[level] = head
 			sk.head[level] = node
 			if 0 == level {
@@ -79,8 +83,8 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 				continue
 			}
 
-			compNext := bytes.Compare(current.next[level].key, node.key)
-			if -1 == compNext {
+			compNext := sk.comparator(current.next[level].key, node.key)
+			if 1 == compNext {
 				node.next[level] = current.next[level]
 				current.next[level] = node
 				if 0 == level {
@@ -106,4 +110,12 @@ func randomHeight(maxHeight uint8) uint8 {
 	}
 
 	return h
+}
+
+func SortAscending(a, b []byte) int {
+	return bytes.Compare(a, b)
+}
+
+func SortDescending(a, b []byte) int {
+	return bytes.Compare(b, a)
 }

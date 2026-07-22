@@ -12,7 +12,7 @@ type LogStructuredMergeTree struct {
 }
 
 func NewLSM() *LogStructuredMergeTree {
-	memtable := skiplist.NewSkipList()
+	memtable := skiplist.NewSkipList(skiplist.SortDescending)
 
 	sess := db.Session{
 		Memtable: memtable,
