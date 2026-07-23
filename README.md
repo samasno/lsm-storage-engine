@@ -1,6 +1,6 @@
 # lsm-storage-engine
 
-> **Work in progress.** Nothing is built yet. This repo is in the design phase.
+> **Work in progress.** Partially implemented — see status below.
 
 A from-scratch LSM (Log-Structured Merge-Tree) storage engine written in Go, built for learning purposes by studying [goleveldb](https://github.com/syndtr/goleveldb).
 
@@ -56,6 +56,18 @@ Get → Memtable → Version (L0 → L1 → L2 ...)
 | Crash before WAL write completes | Truncate corrupted entry, recover to last valid WAL entry |
 | Crash after WAL but before memtable insert | Replay WAL into memtable |
 | Crash during flush | Recover WAL → memtable → re-flush |
+
+## Status
+
+| Component | Status |
+|---|---|
+| Skiplist | In progress |
+| Memtable | In progress |
+| WAL | Stub |
+| Storage | Stub |
+| Version | Stub |
+| Compactor | Stub |
+| DB | Not started |
 
 ## Design notes
 
