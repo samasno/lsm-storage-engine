@@ -109,6 +109,10 @@ func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) 
 
 	level := sk.height
 	var current *SkipListNode
+
+	sk.mtx.RLock()
+	defer sk.mtx.RUnlock()
+
 	for {
 		if 0 == level {
 			break
