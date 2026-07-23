@@ -63,11 +63,11 @@ Get → Memtable → Version (L0 → L1 → L2 ...)
 |---|---|
 | Skiplist | In progress |
 | Memtable | In progress |
+| DB | In progress — write path only (Put, Delete) |
 | WAL | Stub |
 | Storage | Stub |
 | Version | Stub |
 | Compactor | Stub |
-| DB | Not started |
 
 ## Design notes
 
