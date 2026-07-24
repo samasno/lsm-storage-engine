@@ -63,11 +63,11 @@ Get → Memtable → Version (L0 → L1 → L2 ...)
 |---|---|
 | Skiplist | In progress |
 | Memtable | In progress |
+| DB | In progress — Put, Get, Delete implemented; write pipeline serialized via channel |
 | WAL | Stub |
 | Storage | Stub |
 | Version | Stub |
 | Compactor | Stub |
-| DB | Not started |
 
 ## Design notes
 
