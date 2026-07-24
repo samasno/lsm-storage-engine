@@ -5,6 +5,7 @@ type Action uint8
 const (
 	Insert Action = iota + 1
 	Delete
+	Seek
 )
 
 type Update struct {
