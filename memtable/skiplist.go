@@ -38,7 +38,7 @@ func newNode(key, value []byte) *SkipListNode {
 	return &SkipListNode{key: key, value: value, next: [maxHeight]*SkipListNode{}}
 }
 
-func (sk *Skiplist) Insert(key, value []byte) (err error) {
+func (sk *Skiplist) Insert(key, value []byte) {
 	node := newNode(key, value)
 
 	node.height = randomHeight(sk.maxHeight)
@@ -66,7 +66,7 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 			node.next[level] = head
 			sk.head[level] = node
 			if 0 == level {
-				return nil
+				return
 			}
 			level--
 			continue
@@ -77,7 +77,7 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 			if current.next[level] == nil {
 				current.next[level] = node
 				if level == 0 {
-					return nil
+					return
 				}
 				level--
 				continue
@@ -88,7 +88,7 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 				node.next[level] = current.next[level]
 				current.next[level] = node
 				if 0 == level {
-					return nil
+					return
 				}
 				level--
 				continue
@@ -97,8 +97,20 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 			current = current.next[level]
 		}
 	}
+}
 
-	return nil
+func (sk *Skiplist) Seek(seekkey []byte) []byte {
+	key, value := sk.SeekEqualOrLower(seekkey)
+	if nil == key {
+		return nil
+	}
+
+	comp := bytes.Compare(seekkey, key)
+	if 0 != comp {
+		return nil
+	}
+
+	return value
 }
 
 func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) {

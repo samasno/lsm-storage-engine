@@ -143,11 +143,36 @@ func newMockMemtable() Memtable {
 	}
 }
 
-func (mm *mockMemtable) Insert(key []byte, value []byte) error {
+func (mm *mockMemtable) Seek([]byte) []byte {
+	return nil
+}
+
+func (mm *mockMemtable) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) {
+	mm.mtx.Lock()
+	defer mm.mtx.Unlock()
+
+	for k, v := range mm.data {
+		kb := []byte(k)
+		if bytes.Compare(kb, seekkey) <= 0 {
+			if key == nil || bytes.Compare(kb, key) > 0 {
+				key = kb
+				value = v
+			}
+		}
+	}
+
+	return key, value
+}
+
+func (mm *mockMemtable) Delete(key []byte) error {
+	return nil
+}
+
+func (mm *mockMemtable) Insert(key []byte, value []byte) {
 	mm.mtx.Lock()
 	defer mm.mtx.Unlock()
 	mm.data[string(key)] = value
-	return nil
+	// fmt.Printf("%v", key)
 }
 
 func assertEqual[T comparable](t *testing.T, name string, actual, expected T) {

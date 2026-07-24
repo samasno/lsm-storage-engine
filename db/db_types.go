@@ -5,6 +5,7 @@ type Action uint8
 const (
 	Insert Action = iota + 1
 	Delete
+	Seek
 )
 
 type Update struct {
@@ -16,5 +17,7 @@ type Update struct {
 }
 
 type Memtable interface {
-	Insert(key []byte, value []byte) error
+	Insert(key []byte, value []byte)
+	Seek(seekkey []byte) (value []byte)
+	SeekEqualOrLower(seekkey []byte) (key []byte, value []byte)
 }
