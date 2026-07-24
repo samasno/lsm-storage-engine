@@ -101,6 +101,16 @@ func (sk *Skiplist) Insert(key, value []byte) (err error) {
 	return nil
 }
 
+func (sk *Skiplist) Seek(seekkey []byte) []byte {
+	key, value := sk.SeekEqualOrLower(seekkey)
+	comp := bytes.Compare(seekkey, key)
+	if 0 != comp {
+		return nil
+	}
+
+	return value
+}
+
 func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) {
 	assert(seekkey != nil && 0 != len(seekkey), "Cannot seek nil or empty key")
 	if nil == sk.head[0] {
