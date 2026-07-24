@@ -16,5 +16,7 @@ type Update struct {
 }
 
 type Memtable interface {
-	Insert(key []byte, value []byte) error
+	Insert(key []byte, value []byte)
+	Seek(seekkey []byte) (value []byte)
+	SeekEqualOrLower(seekkey []byte) (key []byte, value []byte)
 }
