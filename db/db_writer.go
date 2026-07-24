@@ -2,11 +2,18 @@ package db
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"sync/atomic"
 )
 
+var ErrNullKey = errors.New("error null or empty key provided")
+
 func (db *DB) Put(key, value []byte) error {
+	if nil == key || 0 == len(key) {
+		return ErrNullKey
+	}
+
 	return db.handleWrite(key, value, Insert)
 }
 
@@ -72,12 +79,12 @@ InsertLoop:
 }
 
 func (db *DB) insertUpdate(update Update) error {
+	if nil == update.Key {
+		return ErrNullKey
+	}
 	encodedKey := encodeKey(update.Key, update.Action, update.Sequence)
 
-	err := db.memtable.Insert(encodedKey, update.Value)
-	if err != nil {
-		return err
-	}
+	db.memtable.Insert(encodedKey, update.Value)
 
 	return nil
 }
