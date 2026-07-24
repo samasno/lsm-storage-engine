@@ -1,7 +1,7 @@
 package lsmtree
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/samasno/lsm-storage-engine/db"
 	skiplist "github.com/samasno/lsm-storage-engine/memtable"
@@ -10,6 +10,8 @@ import (
 type LogStructuredMergeTree struct {
 	db *db.DB
 }
+
+var ErrNilKey = errors.New("Nil or empty key provided")
 
 func NewLSM() *LogStructuredMergeTree {
 	memtable := skiplist.NewSkipList(skiplist.SortKeysDescending)
@@ -32,8 +34,8 @@ func NewLSM() *LogStructuredMergeTree {
 }
 
 func (lsm *LogStructuredMergeTree) Put(key, value []byte) error {
-	if nil == key || 0 == len(key) {
-		return fmt.Errorf("Cannot PUT nil or empty key")
+	if nilOrEmpty(key) {
+		return ErrNilKey
 	}
 
 	err := lsm.db.Put(key, value)
@@ -45,8 +47,8 @@ func (lsm *LogStructuredMergeTree) Put(key, value []byte) error {
 }
 
 func (lsm *LogStructuredMergeTree) Delete(key []byte) error {
-	if nil == key || 0 == len(key) {
-		return fmt.Errorf("Cannot DELETE nil or empty key")
+	if nilOrEmpty(key) {
+		return ErrNilKey
 	}
 
 	err := lsm.db.Delete(key)
@@ -55,4 +57,25 @@ func (lsm *LogStructuredMergeTree) Delete(key []byte) error {
 	}
 
 	return nil
+}
+
+func (lsm *LogStructuredMergeTree) Get(key []byte) ([]byte, error) {
+	if nilOrEmpty(key) {
+		return nil, ErrNilKey
+	}
+
+	value, err := lsm.db.Get(key)
+	if err != nil {
+		return nil, err
+	}
+
+	return value, nil
+}
+
+func nilOrEmpty(key []byte) bool {
+	if nil == key || 0 == len(key) {
+		return true
+	}
+
+	return false
 }
