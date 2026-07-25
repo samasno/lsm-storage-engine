@@ -23,7 +23,7 @@ db.Close() error
 | **WAL** | Append-only write-ahead log for crash recovery |
 | **Memtable** | In-memory sorted buffer; holds multiple versions per key via sequence number |
 | **Storage** | Manages SSTables on disk |
-| **Version** | In-memory representation of the LSM tree (which SSTable files exist at each level); rebuilt at startup, updated after each flush or compaction |
+| **Manifest** | In-memory representation of the LSM tree (which SSTable files exist at each level); rebuilt at startup, updated after each flush or compaction |
 | **Compactor** | Merges SSTables across levels, drops stale versions and tombstones |
 | **Scanner** | Merges results from memtable and SSTables; must be released after use |
 
@@ -36,7 +36,7 @@ Put/Delete → WAL → Memtable → (flush) → L0 SSTable → (compaction) → 
 ## Read path
 
 ```
-Get → Memtable → Version (L0 → L1 → L2 ...)
+Get → Memtable → Manifest (L0 → L1 → L2 ...)
 ```
 
 ## Key invariants
@@ -66,7 +66,7 @@ Get → Memtable → Version (L0 → L1 → L2 ...)
 | DB | In progress — write path only (Put, Delete) |
 | WAL | Stub |
 | Storage | Stub |
-| Version | Stub |
+| Manifest | Stub |
 | Compactor | Stub |
 
 ## Design notes
