@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"math/rand"
 	"sync"
+
+	dbtypes "github.com/samasno/lsm-storage-engine/types"
 )
 
 const maxHeight uint8 = 32
@@ -25,7 +27,7 @@ type SkipListNode struct {
 	height uint8
 }
 
-func NewSkipList(comparator Comparator) *Skiplist {
+func NewSkipList(comparator Comparator) dbtypes.Memtable {
 	return &Skiplist{
 		maxHeight:  maxHeight,
 		mtx:        &sync.RWMutex{},
@@ -186,6 +188,14 @@ func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) 
 	}
 
 	return nil, nil
+}
+
+func (sk *Skiplist) Scanner(start, end []byte) dbtypes.Scanner {
+	scanner := &Scanner{
+		next: sk.head[0],
+	}
+
+	return scanner
 }
 
 func randomHeight(maxHeight uint8) uint8 {
