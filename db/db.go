@@ -1,17 +1,21 @@
 package db
 
-import "fmt"
+import (
+	"fmt"
+
+	dbtypes "github.com/samasno/lsm-storage-engine/types"
+)
 
 type DB struct {
 	sequence uint64
 
-	memtable        Memtable
+	memtable        dbtypes.Memtable
 	memtableInsertC chan Update
 	memtableDoneC   chan struct{}
 }
 
 type Session struct {
-	Memtable Memtable
+	Memtable dbtypes.Memtable
 }
 
 func NewDB(session Session) (*DB, error) {
