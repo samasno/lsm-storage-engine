@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"math/rand"
 	"sync"
+
+	dbtypes "github.com/samasno/lsm-storage-engine/types"
 )
 
 const maxHeight uint8 = 32
@@ -25,7 +27,7 @@ type SkipListNode struct {
 	height uint8
 }
 
-func NewSkipList(comparator Comparator) *Skiplist {
+func NewSkipList(comparator Comparator) dbtypes.Memtable {
 	return &Skiplist{
 		maxHeight:  maxHeight,
 		mtx:        &sync.RWMutex{},
@@ -114,9 +116,18 @@ func (sk *Skiplist) Seek(seekkey []byte) []byte {
 }
 
 func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) {
+	node := sk.seekEqualOrLower(seekkey)
+	if nil == node {
+		return nil, nil
+	}
+
+	return node.key, node.value
+}
+
+func (sk *Skiplist) seekEqualOrLower(seekkey []byte) *SkipListNode {
 	assert(seekkey != nil && 0 != len(seekkey), "Cannot seek nil or empty key")
 	if nil == sk.head[0] {
-		return nil, nil
+		return nil
 	}
 
 	level := sk.height
@@ -133,7 +144,7 @@ func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) 
 		current = sk.head[level]
 		comp := sk.comparator(current.key, seekkey)
 		if 0 == comp {
-			return current.key, current.value
+			return current
 		}
 
 		if 1 == comp {
@@ -152,7 +163,7 @@ func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) 
 
 		comp := sk.comparator(current.key, seekkey)
 		if 0 == comp {
-			return current.key, current.value
+			return current
 		}
 
 		if nil == current.next[level] {
@@ -182,10 +193,28 @@ func (sk *Skiplist) SeekEqualOrLower(seekkey []byte) (key []byte, value []byte) 
 			continue
 		}
 
-		return current.key, current.value
+		return current
 	}
 
-	return nil, nil
+	return current
+}
+
+func (sk *Skiplist) Scanner(startkey []byte) dbtypes.Scanner {
+	sk.mtx.RLock()
+
+	var node *SkipListNode
+	if nil == startkey {
+		node = sk.head[0]
+	} else {
+		node = sk.seekEqualOrLower(startkey)
+	}
+
+	scanner := &Scanner{
+		release: func() { sk.mtx.RUnlock() },
+		next:    node,
+	}
+
+	return scanner
 }
 
 func randomHeight(maxHeight uint8) uint8 {

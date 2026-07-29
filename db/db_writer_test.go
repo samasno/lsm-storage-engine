@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+
+	dbtypes "github.com/samasno/lsm-storage-engine/types"
 )
 
 func TestDBPutsRecords(t *testing.T) {
@@ -136,7 +138,7 @@ type mockMemtable struct {
 	mtx  *sync.Mutex
 }
 
-func newMockMemtable() Memtable {
+func newMockMemtable() dbtypes.Memtable {
 	return &mockMemtable{
 		data: map[string][]byte{},
 		mtx:  &sync.Mutex{},
@@ -144,6 +146,10 @@ func newMockMemtable() Memtable {
 }
 
 func (mm *mockMemtable) Seek([]byte) []byte {
+	return nil
+}
+
+func (mm *mockMemtable) Scanner(firstKey []byte) dbtypes.Scanner {
 	return nil
 }
 

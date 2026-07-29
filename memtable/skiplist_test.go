@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"fmt"
 	"testing"
+
+	dbtypes "github.com/samasno/lsm-storage-engine/types"
 )
 
 func TestInsertsInDescendingOrder(t *testing.T) {
@@ -43,7 +45,7 @@ func TestSeekLTE(t *testing.T) {
 	assertEqual(t, "Got correct value", string(v), a)
 }
 
-func generateTestEntries(count int, sk *Skiplist) error {
+func generateTestEntries(count int, sk dbtypes.Memtable) error {
 	for i := 0; i < count; i++ {
 		key := make([]byte, 20)
 		_, err := rand.Read(key)
@@ -76,7 +78,8 @@ func assertEqual[T comparable](t *testing.T, name string, actual, expected T) {
 	}
 }
 
-func skiplistLevelsDescendingOrdered(sk *Skiplist) error {
+func skiplistLevelsDescendingOrdered(mt dbtypes.Memtable) error {
+	sk := mt.(*Skiplist)
 	for i := uint8(0); i <= sk.height; i++ {
 		err := checkLevelDescendingOrdered(sk, i)
 		if err != nil {
@@ -111,7 +114,8 @@ func checkLevelDescendingOrdered(sk *Skiplist, level uint8) error {
 	return nil
 }
 
-func crossLevelConsistency(sk *Skiplist) error {
+func crossLevelConsistency(mt dbtypes.Memtable) error {
+	sk := mt.(*Skiplist)
 	for upper := uint8(1); upper <= sk.height; upper++ {
 		err := levelIsSubsequence(sk, upper, upper-1)
 		if err != nil {
