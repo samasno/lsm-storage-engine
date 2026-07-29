@@ -149,7 +149,7 @@ func (mm *mockMemtable) Seek([]byte) []byte {
 	return nil
 }
 
-func (mm *mockMemtable) Scanner(firstKey, lastKey []byte) dbtypes.Scanner {
+func (mm *mockMemtable) Scanner(firstKey []byte) dbtypes.Scanner {
 	return nil
 }
 
