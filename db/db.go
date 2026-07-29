@@ -12,6 +12,8 @@ type DB struct {
 	memtable        dbtypes.Memtable
 	memtableInsertC chan Update
 	memtableDoneC   chan struct{}
+
+	manifest Manifest
 }
 
 type Session struct {
