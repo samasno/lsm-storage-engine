@@ -201,9 +201,10 @@ func (sk *Skiplist) seekEqualOrLower(seekkey []byte) *SkipListNode {
 
 func (sk *Skiplist) Scanner(startkey []byte) dbtypes.Scanner {
 	sk.mtx.RLock()
+	node := sk.seekEqualOrLower(startkey)
 	scanner := &Scanner{
 		release: func() { sk.mtx.RUnlock() },
-		next:    sk.head[0],
+		next:    node,
 	}
 
 	return scanner
